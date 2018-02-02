@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        html{
+            font-size: 625%;
+        }
+        body{
+            font-size: 0.16rem;
+        }
+        html, body{
+            height: 100%;
+        }
+        body{
+            padding: 0.2rem;
+            box-sizing: border-box;
+        }
+        .bg_box{
+            width: 100%;
+            height: 100%;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+            position: relative;
+        }
+        .a{
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .b{
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+        }
+        .c{
+            flex: 1;
+            text-align: center;
+        }
+        .puzzle_box{
+            position: absolute;
+            box-sizing: border-box;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+        .puzzle_item{
+            position: absolute;
+            background: #007ACC;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg_box">
+        <div class="a">
+            <div class="b">
+                <div class="c"></div>
+                <div class="c"></div>
+                <div class="c"></div>
+                <div class="c"></div>
+            </div>
+            <div class="b">
+                <div class="c"></div>
+                <div class="c"></div>
+                <div class="c"></div>
+                <div class="c"></div>
+            </div>
+            <div class="b">
+                <div class="c"></div>
+                <div class="c"></div>
+                <div class="c"></div>
+                <div class="c"></div>
+            </div>
+            <div class="b">
+                <div class="c"></div>
+                <div class="c"></div>
+                <div class="c"></div>
+                <div class="c"></div>
+            </div>
+            <div class="b">
+                <div class="c"></div>
+                <div class="c"></div>
+                <div class="c"></div>
+                <div class="c"></div>
+            </div>
+            <div class="b">
+                <div class="c"></div>
+                <div class="c"></div>
+                <div class="c"></div>
+                <div class="c"></div>
+            </div>
+        </div>
+        <div class="puzzle_box">
+            <div class="puzzle_item" true_num="1" num="1">1</div>
+            <div class="puzzle_item" true_num="2" num="3">2</div>
+            <div class="puzzle_item" true_num="3" num="2">3</div>
+            <div class="puzzle_item" true_num="4" num="4">4</div>
+            <div class="puzzle_item" true_num="5" num="5">5</div>
+            <div class="puzzle_item" true_num="6" num="6">6</div>
+            <div class="puzzle_item" true_num="7" num="7">7</div>
+            <div class="puzzle_item" true_num="8" num="8">8</div>
+            <div class="puzzle_item" true_num="9" num="9">9</div>
+            <div class="puzzle_item" true_num="10" num="10">10</div>
+            <div class="puzzle_item" true_num="11" num="11">11</div>
+            <div class="puzzle_item" true_num="12" num="12">12</div>
+            <div class="puzzle_item" true_num="13" num="13">13</div>
+            <div class="puzzle_item" true_num="14" num="14">14</div>
+            <div class="puzzle_item" true_num="15" num="15">15</div>
+            <div class="puzzle_item" true_num="16" num="16">16</div>
+            <div class="puzzle_item" true_num="17" num="17">17</div>
+            <div class="puzzle_item" true_num="18" num="18">18</div>
+            <div class="puzzle_item" true_num="19" num="19">19</div>
+            <div class="puzzle_item" true_num="20" num="20">20</div>
+            <div class="puzzle_item" true_num="21" num="21">21</div>
+            <div class="puzzle_item" true_num="22" num="22">22</div>
+            <div class="puzzle_item" true_num="23" num="23">23</div>
+        </div>
+    </div>
+    <script>
+        function getStyle(ele){
+            if (window.getComputedStyle) {
+                return window.getComputedStyle(ele, null);    // 非IE
+            } else { 
+                return ele.currentStyle;  // IE
+            }
+        }
+        window.onload = function(){
+            var itemBox = document.getElementsByClassName("c")[0];
+            var itemBoxWidth = parseInt(getStyle(itemBox).width) || itemBox.offsetWidth;
+            var itemBoxHeight = parseInt(getStyle(itemBox).height) || itemBox.offsetHeight;
+            var puzzleItems = document.getElementsByClassName("puzzle_item");
+            var puzzleItemBoxes = document.getElementsByClassName("c");
+            refreshItemsPos();
+            function refreshItemsPos(){
+                for(var i=0; i<puzzleItems.length; i++){
+                    puzzleItems[i].style.width = itemBoxWidth - 2 + "px";
+                    puzzleItems[i].style.height = itemBoxHeight - 2 + "px";
+                    puzzleItems[i].style.top = puzzleItemBoxes[parseInt(puzzleItems[i].getAttribute("num")) - 1].offsetTop + 1 +"px";
+                    puzzleItems[i].style.left = puzzleItemBoxes[parseInt(puzzleItems[i].getAttribute("num")) - 1].offsetLeft + 1 +"px";
+                }
+            }
+        }
+    </script>
+</body>
+</html>
