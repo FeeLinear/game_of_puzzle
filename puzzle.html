@@ -60,76 +60,60 @@
             align-items: center;
             justify-content: space-around;
             flex-direction: column;
+            color: #fff;
+            font-size: 0.4rem;
+            transition: all 0.1s ease-in-out;
+        }
+        .shadow{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            z-index: 9;
+        }
+        .shadow ul{
+            position: absolute;
+            width: 50%;
+            height: 30%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 0.2rem rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-direction: column;
+        }
+        .shadow ul li{
+            flex: 1;
+            list-style: none;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-direction: column;
+            width: 100%;
         }
     </style>
 </head>
 <body>
+    <div class="shadow">
+        <ul>
+            <li class="level" level="a">简单</li>
+            <li class="level" level="b">一般</li>
+            <li class="level" level="c">困难</li>
+            <li class="level" level="d">超级困难</li>
+        </ul>
+    </div>
     <div class="bg_box">
-        <div class="a">
-            <div class="b">
-                <div class="c"></div>
-                <div class="c"></div>
-                <div class="c"></div>
-                <div class="c"></div>
-            </div>
-            <div class="b">
-                <div class="c"></div>
-                <div class="c"></div>
-                <div class="c"></div>
-                <div class="c"></div>
-            </div>
-            <div class="b">
-                <div class="c"></div>
-                <div class="c"></div>
-                <div class="c"></div>
-                <div class="c"></div>
-            </div>
-            <div class="b">
-                <div class="c"></div>
-                <div class="c"></div>
-                <div class="c"></div>
-                <div class="c"></div>
-            </div>
-            <div class="b">
-                <div class="c"></div>
-                <div class="c"></div>
-                <div class="c"></div>
-                <div class="c"></div>
-            </div>
-            <div class="b">
-                <div class="c"></div>
-                <div class="c"></div>
-                <div class="c"></div>
-                <div class="c"></div>
-            </div>
-        </div>
-        <div class="puzzle_box">
-            <div class="puzzle_item" true_num="1" num="1">1</div>
-            <div class="puzzle_item" true_num="2" num="3">2</div>
-            <div class="puzzle_item" true_num="3" num="2">3</div>
-            <div class="puzzle_item" true_num="4" num="4">4</div>
-            <div class="puzzle_item" true_num="5" num="5">5</div>
-            <div class="puzzle_item" true_num="6" num="6">6</div>
-            <div class="puzzle_item" true_num="7" num="7">7</div>
-            <div class="puzzle_item" true_num="8" num="8">8</div>
-            <div class="puzzle_item" true_num="9" num="9">9</div>
-            <div class="puzzle_item" true_num="10" num="10">10</div>
-            <div class="puzzle_item" true_num="11" num="11">11</div>
-            <div class="puzzle_item" true_num="12" num="12">12</div>
-            <div class="puzzle_item" true_num="13" num="13">13</div>
-            <div class="puzzle_item" true_num="14" num="14">14</div>
-            <div class="puzzle_item" true_num="15" num="15">15</div>
-            <div class="puzzle_item" true_num="16" num="16">16</div>
-            <div class="puzzle_item" true_num="17" num="17">17</div>
-            <div class="puzzle_item" true_num="18" num="18">18</div>
-            <div class="puzzle_item" true_num="19" num="19">19</div>
-            <div class="puzzle_item" true_num="20" num="20">20</div>
-            <div class="puzzle_item" true_num="21" num="21">21</div>
-            <div class="puzzle_item" true_num="22" num="22">22</div>
-            <div class="puzzle_item" true_num="23" num="23">23</div>
-        </div>
+        <div class="a"></div>
+        <div class="puzzle_box"></div>
     </div>
     <script>
+        var puzzle;
+        
         function getStyle(ele){
             if (window.getComputedStyle) {
                 return window.getComputedStyle(ele, null);    // 非IE
@@ -137,22 +121,260 @@
                 return ele.currentStyle;  // IE
             }
         }
-        window.onload = function(){
-            var itemBox = document.getElementsByClassName("c")[0];
-            var itemBoxWidth = parseInt(getStyle(itemBox).width) || itemBox.offsetWidth;
-            var itemBoxHeight = parseInt(getStyle(itemBox).height) || itemBox.offsetHeight;
-            var puzzleItems = document.getElementsByClassName("puzzle_item");
-            var puzzleItemBoxes = document.getElementsByClassName("c");
-            refreshItemsPos();
-            function refreshItemsPos(){
+
+        function PuzzleGame(options){
+            this.cols = options.cols;
+            this.rows = options.rows;
+            this.nums = options.rows * options.cols;
+            this.aDom = document.getElementsByClassName("a")[0];
+            this.pBox = document.getElementsByClassName("puzzle_box")[0];
+            this._init();
+        }
+        PuzzleGame.prototype = {
+            _init: function(){
+                this.createDom();
+                this.refreshItemsPos();
+                this.bindEvent();
+            },
+            createDom: function(){
+                var rows = this.rows, 
+                    cols,
+                    doms = "";
+
+                while(rows--){
+                    cols = this.cols;
+                    doms += "<div class=b>";
+                    while(cols--){
+                        doms += "<div class=c></div>";
+                    }
+                    doms += "</div>";
+                }
+                this.aDom.innerHTML = doms;
+
+                doms = "";
+                var nums = this.rows * this.cols, numsArr = [];
+                for(var m=0; m<nums; m++){
+                    numsArr[m] = m + 1;
+                }
+                numsArr.sort(function(){ return 0.5 - Math.random() });
+                numsArr.pop();
+                
+                createCorrectArr();
+                function createCorrectArr(){
+                    numsArr.sort(function(){ return 0.5 - Math.random() });
+                    var inversionNumber = 0;  //逆序数为偶则有解
+                    for(var x=0; x<numsArr.length-1; x++){
+                        for(var y = x + 1; y<numsArr.length; y++){
+                            if(numsArr[x] > numsArr[y]){
+                                inversionNumber += 1;
+                            }
+                        }
+                    }
+                    if(inversionNumber%2 != 0){
+                        createCorrectArr();
+                    }else{
+                        console.log(inversionNumber);
+                    }
+                }
+                console.log(numsArr);
+                
+                
+                for(var n=0; n<nums-1; n++){
+                    doms += '<div class="puzzle_item" true_num=' + (n+1) + ' num=' + numsArr[n] + '>' + (n+1) + '</div>';
+                }
+                this.pBox.innerHTML = doms;
+                document.body.ontouchmove = function(e){
+                    e.preventDefault();
+                }
+            },
+            refreshItemsPos: function(){
+                var itemBox = document.getElementsByClassName("c")[0];
+                var itemBoxWidth = parseInt(getStyle(itemBox).width) || itemBox.offsetWidth;
+                var itemBoxHeight = parseInt(getStyle(itemBox).height) || itemBox.offsetHeight;
+                var puzzleItems = document.getElementsByClassName("puzzle_item");
+                var puzzleItemBoxes = document.getElementsByClassName("c");
+
+                for(var m=0; m<puzzleItemBoxes.length; m++){
+                    puzzleItemBoxes[m].setAttribute("isFull", "0");
+                }
+                
                 for(var i=0; i<puzzleItems.length; i++){
                     puzzleItems[i].style.width = itemBoxWidth - 2 + "px";
                     puzzleItems[i].style.height = itemBoxHeight - 2 + "px";
-                    puzzleItems[i].style.top = puzzleItemBoxes[parseInt(puzzleItems[i].getAttribute("num")) - 1].offsetTop + 1 +"px";
-                    puzzleItems[i].style.left = puzzleItemBoxes[parseInt(puzzleItems[i].getAttribute("num")) - 1].offsetLeft + 1 +"px";
+                    var j = parseInt(puzzleItems[i].getAttribute("num")) - 1;
+                    puzzleItemBoxes[j].setAttribute("isFull", "1");
+                    puzzleItems[i].style.top = puzzleItemBoxes[j].offsetTop + 1 +"px";
+                    puzzleItems[i].style.left = puzzleItemBoxes[j].offsetLeft + 1 +"px";
+                }
+                this.changeAttr();
+            },
+            changeAttr: function(){
+                var self = this;
+                var puzzleItems = document.getElementsByClassName("puzzle_item");
+                var puzzleItemBoxes = document.getElementsByClassName("c");
+                var emptyNum = 0;
+                for(var i=0; i<puzzleItemBoxes.length; i++){
+                    if(puzzleItemBoxes[i].getAttribute("isFull") == "0"){
+                        emptyNum = i;
+                        break;
+                    }
+                }
+                
+                var topNum = emptyNum - this.cols + 1,
+                    rightNum = emptyNum + 2,
+                    bottomNum = emptyNum + this.cols + 1,
+                    leftNum = emptyNum;
+
+                for(var j=0; j<puzzleItems.length; j++){
+                    puzzleItems[j].setAttribute("can_left", "false");
+                    puzzleItems[j].setAttribute("can_right", "false");
+                    puzzleItems[j].setAttribute("can_top", "false");
+                    puzzleItems[j].setAttribute("can_bottom", "false");
+                    if(puzzleItems[j].getAttribute("num") == topNum){
+                        topItem = puzzleItems[j];
+                    }
+                    if(puzzleItems[j].getAttribute("num") == rightNum){
+                        rightItem = puzzleItems[j];
+                    }
+                    if(puzzleItems[j].getAttribute("num") == bottomNum){
+                        bottomItem = puzzleItems[j];
+                    }
+                    if(puzzleItems[j].getAttribute("num") == leftNum){
+                        leftItem = puzzleItems[j];
+                    }
+                }
+                if(topNum >0 ){
+                    topItem.setAttribute("can_bottom", "true");
+                }
+                if(rightNum <= this.nums && (rightNum-1)%this.cols != 0){
+                    rightItem.setAttribute("can_left", "true");
+                }
+                if(bottomNum <= this.nums){
+                    bottomItem.setAttribute("can_top", "true");
+                }
+                if(leftNum > 0 && leftNum%this.cols != 0){
+                    leftItem.setAttribute("can_right", "true");
+                }
+                setTimeout(function(){
+                    if(self.isCompelete()){
+                        alert("恭喜过关！");
+                        location.reload();
+                        return false;
+                    }
+                },100);
+            },
+            isCompelete: function(){
+                var flag = true;
+                var puzzleItems = document.getElementsByClassName("puzzle_item");
+                for(var i=0; i<puzzleItems.length; i++){
+                    if(puzzleItems[i].getAttribute("true_num") != puzzleItems[i].getAttribute("num")){
+                        flag = false;
+                        break;
+                    }
+                }
+                return flag;
+            },
+            bindEvent: function(){
+                var self = this;
+                var judgeDevice = /Android|webOS|iPhone|iPad|BlackBerry/i.test(navigator.userAgent);
+                var puzzleItems = document.getElementsByClassName("puzzle_item");
+                var puzzleItemBoxes = document.getElementsByClassName("c");
+                var isEnd = true;
+                if(judgeDevice){
+                    for(var i=0; i<puzzleItems.length; i++){
+                        puzzleItems[i].ontouchstart = function(e){
+                            if(!isEnd){
+                                return false;
+                            }
+                            var that = this;
+                            var touch = e.touches[0];
+                            var oX = Number(touch.pageX);
+                            var oY = Number(touch.pageY);
+                            var oTop = that.offsetTop;
+                            var oLeft = that.offsetLeft;
+                            var isMove = false;
+                            var num = parseInt(that.getAttribute("num"));
+                            var spaceX;
+                            var spaceY;
+                            document.ontouchmove = function(e){
+                                isMove = true;
+                                var touchM = e.touches[0];
+                                var x = Number(touchM.pageX);
+                                var y = Number(touchM.pageY);
+                                spaceX = x - oX;
+                                spaceY = y - oY;
+                                
+                            }
+                            document.ontouchend = function(e){
+                                document.ontouchmove = null;
+                                document.ontouchend = null;
+                                
+                                if(isMove){
+                                    if(spaceX > 20 && that.getAttribute("can_right") == "true" && Math.abs(spaceY) < 120){
+                                        isEnd = false;
+                                        that.style.left = puzzleItemBoxes[num].offsetLeft + 1 +"px";
+                                        that.setAttribute("num", num + 1);
+                                    }else if(spaceX < -20 && that.getAttribute("can_left") == "true" && Math.abs(spaceY) < 120){
+                                        isEnd = false;
+                                        that.style.left = puzzleItemBoxes[num - 2].offsetLeft + 1 +"px";
+                                        that.setAttribute("num", num - 1);
+                                    }else if(spaceY < -20 && that.getAttribute("can_top") == "true" && Math.abs(spaceX) < 120){
+                                        isEnd = false;
+                                        that.style.top = puzzleItemBoxes[num - self.cols -1].offsetTop + 1 +"px";
+                                        that.setAttribute("num", num - self.cols);
+                                    }else if(spaceY > 20 && that.getAttribute("can_bottom") == "true" && Math.abs(spaceX) < 120){
+                                        isEnd = false;
+                                        that.style.top = puzzleItemBoxes[num + self.cols -1].offsetTop + 1 +"px";
+                                        that.setAttribute("num", num + self.cols);
+                                    }
+                                    setTimeout(function(){
+                                        self.refreshItemsPos();
+                                        isEnd = true;
+                                    }, 100);
+                                }
+                                
+                            }
+
+                        }
+                    }
                 }
             }
+            
         }
+        
+        window.onload = function(){
+            var levelItems = document.getElementsByClassName("level");
+            for(var i=0; i<levelItems.length; i++){
+                levelItems[i].ontouchstart = function(){
+                    var level = this.getAttribute("level");
+                    switch(level){
+                        case "a":
+                            puzzle = new PuzzleGame({cols: 2, rows: 4});
+                            document.getElementsByClassName("shadow")[0].style.display = "none";
+                            break;
+                        case "b":
+                            puzzle = new PuzzleGame({cols: 3, rows: 5});
+                            document.getElementsByClassName("shadow")[0].style.display = "none";
+                            break;
+                        case "c":
+                            puzzle = new PuzzleGame({cols: 4, rows: 6});
+                            document.getElementsByClassName("shadow")[0].style.display = "none";
+                            break;
+                        case "d":
+                            puzzle = new PuzzleGame({cols: 6, rows: 9});
+                            document.getElementsByClassName("shadow")[0].style.display = "none";
+                            break;
+                        default: 
+                            puzzle = new PuzzleGame({cols: 2, rows: 4});
+                            document.getElementsByClassName("shadow")[0].style.display = "none";
+                            break;
+                    }
+                    
+                }
+            }
+
+        }
+        
     </script>
 </body>
 </html>
